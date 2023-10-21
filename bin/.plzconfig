@@ -1,0 +1,90 @@
+[parse]
+BlacklistDirs = tree ; The performance test repo
+preloadsubincludes = ///go//build_defs:go
+preloadsubincludes = ///cc//build_defs:cc 
+preloadsubincludes = ///python//build_defs:python
+preloadsubincludes = ///shell//build_defs:shell
+
+[Plugin "go"]
+Target = //plugins:go
+pleasegotool = ///go//tools/please_go:bootstrap
+importpath = github.com/thought-machine/please
+gotool = //third_party/go:toolchain|go
+FeatureFlags = go_get
+
+[Plugin "cc"]
+target = //plugins:cc
+defaultoptcppflags = --std=c++11 -O2 -DNDEBUG -Wall -Wextra -Werror -Wno-unused-parameter
+defaultdbgcppflags = --std=c++11 -g3 -DDEBUG -Wall -Wextra -Werror -Wno-unused-parameter
+
+[Plugin "shell"]
+Target = //plugins:shell
+
+[Plugin "python"]
+Target = //plugins:python
+; We use the in-repo please_pex tool to build other pexes within this repo.
+; Other projects using Please wouldn't normally need to do anything like this.
+moduledir = third_party.python
+DisableVendorFlags = true
+
+[gc]
+keep = //test/...
+keep = //docs:all
+keep = //package:all
+
+[alias "autofix"]
+desc = Generates generated code and applies lint fixes
+cmd = run //:autofix
+
+[alias "bootstrap"]
+desc = Bootstraps Please from scratch
+cmd = run //:bootstrap --
+
+[alias "bootonly"]
+desc = Bootstraps Please, but does not run any tests.
+cmd = run //:bootstrap -- --skip_tests
+
+[alias "install"]
+desc = Installs Please into ~/.please
+cmd = run //:install --
+
+[alias "plz"]
+desc = Builds & runs the version of plz within this repo.
+cmd = run //package:installed_files --entry_point=please --
+subcommand = test
+subcommand = build
+positionallabels = true
+
+[alias "lint"]
+desc = Runs the linters for this repo
+cmd = run //tools/misc:lint -p --
+
+[alias "go-get"]
+desc = Runs the go deps tool to install new dependencies into the repo
+cmd = run ///go//tools/go_get_migrator --
+
+[licences]
+accept = MIT
+accept = MIT License
+accept = BSD
+accept = BSD-3
+accept = BSD License
+accept = Simplified BSD
+accept = BSD 3-Clause
+accept = BSD-3-Clause
+accept = BSD-2-Clause
+accept = 3-Clause BSD License
+accept = New BSD License
+accept = Apache Software License
+accept = Apache 2.0
+accept = Apache-2.0
+accept = Apache License, Version 2.0
+accept = The Apache Software License, Version 2.0
+accept = PSF
+accept = ASL
+accept = MPL-2.0
+accept = LGPL
+accept = Artistic License
+accept = ISC
+# Not really a licence, but Bazel projects commonly describe things this way.
+accept = notice
